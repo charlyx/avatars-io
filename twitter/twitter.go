@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 
-	lru "github.com/hashicorp/golang-lru"
+	"github.com/hashicorp/golang-lru/simplelru"
 )
 
 const twitterAPI = "https://api.twitter.com"
@@ -41,15 +42,38 @@ func getUserProfileImageURL(username, token string) (string, error) {
 	return userProfile.ImageURL, nil
 }
 
-func Handler(token string, cache *lru.Cache) func(http.ResponseWriter, *http.Request) {
+func getNormalizedSize(size string) string {
+	if size != "bigger" && size != "mini" && size != "normal" && size != "original" {
+		return "normal"
+	}
+	return strings.ToLower(size)
+}
+
+func getSizedProfileImageURL(imageURL, size string) string {
+	size = getNormalizedSize(size)
+
+	if size == "normal" {
+		return imageURL
+	}
+
+	if size == "original" {
+		return strings.Replace(imageURL, "_normal", "", 1)
+	}
+
+	return strings.Replace(imageURL, "normal", size, 1)
+}
+
+func Handler(token string, cache simplelru.LRUCache) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, req *http.Request) {
-		username := req.URL.Query().Get("username")
+		username := strings.ToLower(req.URL.Query().Get("username"))
 
 		if username == "" {
 			log.Print("no username given")
 			http.NotFound(w, req)
 			return
 		}
+
+		size := getNormalizedSize(req.URL.Query().Get("size"))
 
 		profileImageURL := ""
 
@@ -80,6 +104,8 @@ func Handler(token string, cache *lru.Cache) func(http.ResponseWriter, *http.Req
 			log.Printf("got profile image URL %s for user %s", profileImageURL, username)
 		}
 
-		http.Redirect(w, req, profileImageURL, http.StatusFound)
+		sizedProfileImageURL := getSizedProfileImageURL(profileImageURL, size)
+
+		http.Redirect(w, req, sizedProfileImageURL, http.StatusFound)
 	}
 }
