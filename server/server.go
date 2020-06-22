@@ -24,7 +24,7 @@ func Start(port string) error {
 		return err
 	}
 
-	http.HandleFunc("/", twitter.Handler(twitterToken, cache))
+	http.HandleFunc("/twitter", twitter.Handler(twitterToken, cache))
 
 	return http.ListenAndServe(fmt.Sprintf(":%s", port), nil)
 }

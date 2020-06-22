@@ -5,4 +5,4 @@ Wanna get a social media avatar? Avatars.io makes it easy for you. Just give a u
 
 ## Getting started
 
-Give a username and get an avatar in return: `https://avatars.charlyx.dev/?username=charlyx`
+Give a username and get an avatar in return: `https://avatars.charlyx.dev/twitter?username=charlyx`
