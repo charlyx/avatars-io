@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 
 	"github.com/charlyx/avatars.io/secrets"
@@ -9,7 +10,7 @@ import (
 	lru "github.com/hashicorp/golang-lru"
 )
 
-const usage = `<html><head><title>Not found</title></head><body>
+const usage = `<html><head><title>Not found</title></head><link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👤</text></svg>"><body>
 <h1>Not found</h1>
 
 <p>
@@ -28,7 +29,7 @@ Example: <a href="https://avatars.charlyx.dev/twitter?username=charlyx&size=bigg
 
 func defaultHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotFound)
-	fmt.Fprintf(w, usage)
+	io.WriteString(w, usage)
 }
 
 func Start(port string) error {
