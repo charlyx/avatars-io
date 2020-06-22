@@ -21,7 +21,7 @@ You can ask for variant sizings such as "bigger", "mini" and "original" (default
 </p>
 
 <p>
-Example : <a href="https://avatars.charlyx.dev/twitter?username=charlyx&size=bigger">https://avatars.charlyx.dev/twitter?username=charlyx&size=bigger</a>
+Example: <a href="https://avatars.charlyx.dev/twitter?username=charlyx&size=bigger">https://avatars.charlyx.dev/twitter?username=charlyx&size=bigger</a>
 </p>
 </body>
 </html>`
