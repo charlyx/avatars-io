@@ -9,4 +9,4 @@ Give a username and get an avatar in return: `https://avatars.charlyx.dev/twitte
 
 You can ask for variant sizings such as "bigger", "mini" and "original" (default size being "normal").
 
-Example : `https://avatars.charlyx.dev/twitter?username=charlyx&size=bigger`
+Example: `https://avatars.charlyx.dev/twitter?username=charlyx&size=bigger`
