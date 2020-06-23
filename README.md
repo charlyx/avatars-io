@@ -1,5 +1,7 @@
 # avatars-io
 
+![Go](https://github.com/charlyx/avatars-io/workflows/Go/badge.svg)
+
 Wanna get a social media avatar? Avatars.io makes it easy for you. Just give a username then get an avatar!
 
 ## Getting started
