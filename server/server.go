@@ -1,7 +1,7 @@
 package server
 
 import (
-	"io"
+	"fmt"
 	"net/http"
 
 	"github.com/charlyx/avatars.io/gravatar"
@@ -44,7 +44,7 @@ Example: <a href="https://avatars.charlyx.dev/gravatar?email=mon@email&s=200">ht
 
 func defaultHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotFound)
-	io.WriteString(w, usage)
+	fmt.Fprint(w, usage)
 }
 
 func New(twitterToken string, cache simplelru.LRUCache) http.Handler {
