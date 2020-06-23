@@ -21,7 +21,8 @@ func Handler(w http.ResponseWriter, req *http.Request) {
 
 	if email == "" {
 		log.Print("no email given")
-		http.Error(w, "You must specify email parameter.", http.StatusNotFound)
+		http.Error(w, "You must specify email query parameter.", http.StatusBadRequest)
+		return
 	}
 
 	size := req.URL.Query().Get("size")

@@ -10,21 +10,20 @@ import (
 	"github.com/hashicorp/golang-lru/simplelru"
 )
 
-const twitterAPI = "https://api.twitter.com"
+const DefaultImageURL = "https://abs.twimg.com/sticky/default_profile_images/default_profile_normal.png"
+const ShowURL = "https://api.twitter.com/1.1/users/show.json"
 
 type profile struct {
 	ImageURL string `json:"profile_image_url"`
 }
 
 func getUserProfileImageURL(username, token string) string {
-	const defaultImageURL = "https://abs.twimg.com/sticky/default_profile_images/default_profile_normal.png"
-
-	userShowURL := fmt.Sprintf("%s/1.1/users/show.json?screen_name=%s", twitterAPI, username)
+	userShowURL := fmt.Sprintf("%s?screen_name=%s", ShowURL, username)
 
 	req, err := http.NewRequest("GET", userShowURL, nil)
 	if err != nil {
 		log.Printf("got an error creating GET request for %s", userShowURL)
-		return defaultImageURL
+		return DefaultImageURL
 	}
 
 	authorization := fmt.Sprintf("Bearer %s", token)
@@ -34,18 +33,18 @@ func getUserProfileImageURL(username, token string) string {
 	resp, err := client.Do(req)
 	if err != nil {
 		log.Printf("got an error requesting profile image URL for user %s", username)
-		return defaultImageURL
+		return DefaultImageURL
 	}
 	defer resp.Body.Close()
 
 	userProfile := &profile{}
 	if err := json.NewDecoder(resp.Body).Decode(&userProfile); err != nil {
 		log.Printf("got an error decoding user %s profile", username)
-		return defaultImageURL
+		return DefaultImageURL
 	}
 
 	if userProfile.ImageURL == "" {
-		return defaultImageURL
+		return DefaultImageURL
 	}
 
 	return userProfile.ImageURL

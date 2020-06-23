@@ -1,14 +1,12 @@
 package server
 
 import (
-	"fmt"
 	"io"
 	"net/http"
 
 	"github.com/charlyx/avatars.io/gravatar"
-	"github.com/charlyx/avatars.io/secrets"
 	"github.com/charlyx/avatars.io/twitter"
-	lru "github.com/hashicorp/golang-lru"
+	"github.com/hashicorp/golang-lru/simplelru"
 )
 
 const usage = `<html><head><title>Not found</title></head><link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👤</text></svg>"><body>
@@ -49,24 +47,12 @@ func defaultHandler(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, usage)
 }
 
-func Start(port string) error {
-	if port == "" {
-		port = "8080"
-	}
+func New(twitterToken string, cache simplelru.LRUCache) http.Handler {
+	mux := http.NewServeMux()
 
-	cache, err := lru.New(128)
-	if err != nil {
-		return err
-	}
+	mux.HandleFunc("/twitter", twitter.Handler(twitterToken, cache))
+	mux.HandleFunc("/gravatar", gravatar.Handler)
+	mux.HandleFunc("/", defaultHandler)
 
-	twitterToken, err := secrets.Get("TWITTER_BEARER_TOKEN")
-	if err != nil {
-		return err
-	}
-
-	http.HandleFunc("/twitter", twitter.Handler(twitterToken, cache))
-	http.HandleFunc("/gravatar", gravatar.Handler)
-	http.HandleFunc("/", defaultHandler)
-
-	return http.ListenAndServe(fmt.Sprintf(":%s", port), nil)
+	return mux
 }
