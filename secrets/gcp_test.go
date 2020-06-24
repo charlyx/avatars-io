@@ -21,7 +21,7 @@ func (g *GCPSuite) Test_NewClientError() {
 
 func (g *GCPSuite) Test_NewClientSecretAccessor() {
 	assert := g.Assert()
-	os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", "test.json")
+	os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", "testdata/test.json")
 
 	client, err := NewClient("projectID")
 	assert.NoError(err)
