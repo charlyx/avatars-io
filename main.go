@@ -7,8 +7,7 @@ import (
 	"os"
 
 	"github.com/charlyx/avatars.io/secrets"
-	server "github.com/charlyx/avatars.io/server"
-	lru "github.com/hashicorp/golang-lru"
+	"github.com/charlyx/avatars.io/server"
 )
 
 func main() {
@@ -17,17 +16,15 @@ func main() {
 		port = "8080"
 	}
 
-	cache, err := lru.New(128)
+	secretClient, err := secrets.NewClient(os.Getenv("PROJECT_ID"))
 	if err != nil {
-		log.Fatalf("could not create cache: %s", err.Error())
+		log.Fatalf("could not create secret accessor: %s", err)
 	}
 
-	twitterToken, err := secrets.Get("TWITTER_BEARER_TOKEN")
+	handler, err := server.New(secretClient)
 	if err != nil {
-		log.Fatalf("could not get twitter token: %s", err.Error())
+		log.Fatalf("could not create server: %s", err)
 	}
-
-	handler := server.New(twitterToken, cache)
 	address := fmt.Sprintf(":%s", port)
 
 	log.Fatalf("Server stopped: %s", http.ListenAndServe(address, handler))

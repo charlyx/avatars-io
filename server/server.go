@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/charlyx/avatars.io/gravatar"
+	"github.com/charlyx/avatars.io/secrets"
 	"github.com/charlyx/avatars.io/twitter"
-	"github.com/hashicorp/golang-lru/simplelru"
 )
 
 const usage = `<html><head><title>Not found</title></head><link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👤</text></svg>"><body>
@@ -47,12 +47,17 @@ func defaultHandler(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, usage)
 }
 
-func New(twitterToken string, cache simplelru.LRUCache) http.Handler {
+func New(secretAccessor secrets.SecretAccessor) (http.Handler, error) {
+	twitterHandlerFunc, err := twitter.NewHandlerFunc(secretAccessor)
+	if err != nil {
+		return nil, err
+	}
+
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/twitter", twitter.Handler(twitterToken, cache))
-	mux.HandleFunc("/gravatar", gravatar.Handler)
+	mux.Handle("/twitter", twitterHandlerFunc)
+	mux.HandleFunc("/gravatar", gravatar.HandlerFunc)
 	mux.HandleFunc("/", defaultHandler)
 
-	return mux
+	return mux, nil
 }

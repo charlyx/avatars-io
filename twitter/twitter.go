@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/charlyx/avatars.io/secrets"
+	lru "github.com/hashicorp/golang-lru"
 	"github.com/hashicorp/golang-lru/simplelru"
 )
 
@@ -71,7 +73,21 @@ func getSizedProfileImageURL(imageURL, size string) string {
 	return strings.Replace(imageURL, "normal", size, 1)
 }
 
-func Handler(token string, cache simplelru.LRUCache) func(http.ResponseWriter, *http.Request) {
+func NewHandlerFunc(secret secrets.SecretAccessor) (http.HandlerFunc, error) {
+	cache, err := lru.New(128)
+	if err != nil {
+		return nil, fmt.Errorf("could not create cache: %s", err.Error())
+	}
+
+	token, err := secret.Get("TWITTER_BEARER_TOKEN")
+	if err != nil {
+		return nil, fmt.Errorf("could not get twitter token: %s", err.Error())
+	}
+
+	return handlerFunc(token, cache), nil
+}
+
+func handlerFunc(token string, cache simplelru.LRUCache) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		username := strings.ToLower(req.URL.Query().Get("username"))
 

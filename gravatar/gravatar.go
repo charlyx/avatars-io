@@ -16,7 +16,7 @@ func getHash(email string) string {
 	return fmt.Sprintf("%x", md5sum)
 }
 
-func Handler(w http.ResponseWriter, req *http.Request) {
+func HandlerFunc(w http.ResponseWriter, req *http.Request) {
 	email := req.URL.Query().Get("email")
 
 	if email == "" {
