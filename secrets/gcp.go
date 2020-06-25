@@ -4,34 +4,45 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"os"
 
 	secretmanager "cloud.google.com/go/secretmanager/apiv1"
 	secretmanagerpb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1"
 )
 
-func GetVersion(name, version string) (string, error) {
-	if version == "" {
-		version = "latest"
-	}
+type Client struct {
+	secretManager *secretmanager.Client
+	projectID     string
+	context       context.Context
+}
 
-	projectID := os.Getenv("PROJECT_ID")
-
+func NewClient(projectID string) (*Client, error) {
 	if projectID == "" {
-		return "", errors.New("PROJECT_ID environment variable must be specified")
+		return nil, errors.New("projectID must not be empty.")
 	}
 
 	ctx := context.Background()
 	client, err := secretmanager.NewClient(ctx)
 	if err != nil {
-		return "", fmt.Errorf("failed to create secretmanager client: %v", err)
+		return nil, fmt.Errorf("failed to create secretmanager client: %v", err)
+	}
+
+	return &Client{
+		secretManager: client,
+		projectID:     projectID,
+		context:       ctx,
+	}, nil
+}
+
+func (c *Client) GetVersion(name, version string) (string, error) {
+	if version == "" {
+		version = "latest"
 	}
 
 	req := &secretmanagerpb.AccessSecretVersionRequest{
-		Name: fmt.Sprintf("projects/%s/secrets/%s/versions/%s", projectID, name, version),
+		Name: fmt.Sprintf("projects/%s/secrets/%s/versions/%s", c.projectID, name, version),
 	}
 
-	result, err := client.AccessSecretVersion(ctx, req)
+	result, err := c.secretManager.AccessSecretVersion(c.context, req)
 	if err != nil {
 		return "", fmt.Errorf("failed to access secret version: %v", err)
 	}
@@ -39,6 +50,6 @@ func GetVersion(name, version string) (string, error) {
 	return string(result.Payload.Data), nil
 }
 
-func Get(name string) (string, error) {
-	return GetVersion(name, "")
+func (c *Client) Get(name string) (string, error) {
+	return c.GetVersion(name, "")
 }
