@@ -22,7 +22,7 @@ func New() (http.Handler, error) {
 		return nil, err
 	}
 
-	mux := http.NewServeMux()
+  mux := http.NewServeMux()
 
 	mux.HandleFunc("/twitter", twitterHandlerFunc)
 	mux.HandleFunc("/gravatar", gravatar.HandlerFunc)
