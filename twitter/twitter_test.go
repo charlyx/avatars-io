@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-const imageURL = "http://pbs.twimg.com/profile_images/1180040914695327744/qTSU9ZXI_normal.jpg"
+const imageURL = "https://pbs.twimg.com/profile_images/1180040914695327744/qTSU9ZXI_normal.jpg"
 
 type TwitterSuite struct {
 	suite.Suite
@@ -109,7 +109,7 @@ func (s *TwitterSuite) Test_HandlerUserFound() {
 func (s *TwitterSuite) Test_HandlerUserFoundBigger() {
 	assert := s.Assert()
 	const username = "charlyx"
-	const expectedURL = "http://pbs.twimg.com/profile_images/1180040914695327744/qTSU9ZXI_bigger.jpg"
+	const expectedURL = "https://pbs.twimg.com/profile_images/1180040914695327744/qTSU9ZXI_bigger.jpg"
 	mockTwitterShowAPI(username)
 
 	handlerFunc, _ := NewHandlerFunc(s.secretAccessor)
@@ -127,7 +127,7 @@ func (s *TwitterSuite) Test_HandlerUserFoundBigger() {
 func (s *TwitterSuite) Test_HandlerUserFoundMini() {
 	assert := s.Assert()
 	const username = "charlyx"
-	const expectedURL = "http://pbs.twimg.com/profile_images/1180040914695327744/qTSU9ZXI_mini.jpg"
+	const expectedURL = "https://pbs.twimg.com/profile_images/1180040914695327744/qTSU9ZXI_mini.jpg"
 	mockTwitterShowAPI(username)
 
 	handlerFunc, _ := NewHandlerFunc(s.secretAccessor)
@@ -145,7 +145,7 @@ func (s *TwitterSuite) Test_HandlerUserFoundMini() {
 func (s *TwitterSuite) Test_HandlerUserFoundOriginal() {
 	assert := s.Assert()
 	const username = "charlyx"
-	const expectedURL = "http://pbs.twimg.com/profile_images/1180040914695327744/qTSU9ZXI.jpg"
+	const expectedURL = "https://pbs.twimg.com/profile_images/1180040914695327744/qTSU9ZXI.jpg"
 	mockTwitterShowAPI(username)
 
 	handlerFunc, _ := NewHandlerFunc(s.secretAccessor)
@@ -192,7 +192,7 @@ func (s *secretAccessorMock) Get(key string) (string, error) {
 
 func mockTwitterShowAPI(username string) {
 	query := fmt.Sprintf("screen_name=%s", username)
-	resp := fmt.Sprintf(`{"profile_image_url":"%s"}`, imageURL)
+	resp := fmt.Sprintf(`{"profile_image_url_https":"%s"}`, imageURL)
 
 	httpmock.RegisterResponderWithQuery("GET", ShowURL, query,
 		httpmock.NewStringResponder(http.StatusOK, resp),

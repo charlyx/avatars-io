@@ -16,7 +16,7 @@ const DefaultImageURL = "https://abs.twimg.com/sticky/default_profile_images/def
 const ShowURL = "https://api.twitter.com/1.1/users/show.json"
 
 type profile struct {
-	ImageURL string `json:"profile_image_url"`
+	ImageURL string `json:"profile_image_url_https"`
 }
 
 func getUserProfileImageURL(username, token string) string {
