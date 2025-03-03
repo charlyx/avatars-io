@@ -14,7 +14,7 @@ type GCPSuite struct {
 func (g *GCPSuite) Test_NewClientError() {
 	assert := g.Assert()
 
-	client, err := NewClient("")
+	client, err := NewGCPClient("")
 	assert.EqualError(err, "projectID must not be empty.")
 	assert.Nil(client)
 }
@@ -23,7 +23,7 @@ func (g *GCPSuite) Test_NewClientSecretAccessor() {
 	assert := g.Assert()
 	os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", "testdata/test.json")
 
-	client, err := NewClient("projectID")
+	client, err := NewGCPClient("projectID")
 	assert.NoError(err)
 	assert.Implements(new(SecretAccessor), client)
 }

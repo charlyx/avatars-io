@@ -40,5 +40,5 @@ Example: <a href="https://avatars.charlyx.dev/gravatar?email=mon@email&s=200">ht
 
 func HandlerFunc(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotFound)
-	fmt.Fprint(w, usage)
+	fmt.Fprintf(w, "%s", usage)
 }

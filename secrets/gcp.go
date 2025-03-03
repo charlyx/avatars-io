@@ -9,13 +9,13 @@ import (
 	secretmanagerpb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1"
 )
 
-type Client struct {
+type GCPClient struct {
 	secretManager *secretmanager.Client
 	projectID     string
 	context       context.Context
 }
 
-func NewClient(projectID string) (*Client, error) {
+func NewGCPClient(projectID string) (*GCPClient, error) {
 	if projectID == "" {
 		return nil, errors.New("projectID must not be empty.")
 	}
@@ -26,14 +26,14 @@ func NewClient(projectID string) (*Client, error) {
 		return nil, fmt.Errorf("failed to create secretmanager client: %v", err)
 	}
 
-	return &Client{
+	return &GCPClient{
 		secretManager: client,
 		projectID:     projectID,
 		context:       ctx,
 	}, nil
 }
 
-func (c *Client) GetVersion(name, version string) (string, error) {
+func (c *GCPClient) GetVersion(name, version string) (string, error) {
 	if version == "" {
 		version = "latest"
 	}
@@ -50,6 +50,6 @@ func (c *Client) GetVersion(name, version string) (string, error) {
 	return string(result.Payload.Data), nil
 }
 
-func (c *Client) Get(name string) (string, error) {
+func (c *GCPClient) Get(name string) (string, error) {
 	return c.GetVersion(name, "")
 }
